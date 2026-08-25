@@ -1,0 +1,16 @@
+---
+description: Apply when coordinating integration, deployment, or cross-area changes
+alwaysApply: false
+---
+
+# Integration rules
+
+- The Integration Lead protects `main`.
+- Keep `main` runnable.
+- API contract changes require team coordination.
+- Verify frontend/backend compatibility before merging.
+- Avoid architecture rewrites during hackathon hours.
+- Keep environment variables documented.
+- Do not place secrets in deployment configuration.
+- Reject unnecessary scope expansion.
+- Near demo time, prioritize bug fixes over new features.

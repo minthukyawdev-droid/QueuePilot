@@ -1,0 +1,24 @@
+---
+description: QueuePilot project-wide hackathon guardrails
+alwaysApply: true
+---
+
+# Project rules
+
+- This is a four-hour hackathon project.
+- Prefer simple solutions and do not overengineer.
+- Read the root `AGENTS.md` and the nearest nested `AGENTS.md`.
+- Preserve developer ownership and the documented API contract.
+- Do not perform unrelated refactors.
+- Do not add packages without a clear reason.
+- Do not commit secrets.
+- Do not create new infrastructure unless explicitly requested.
+- Do not introduce databases unless explicitly requested.
+- Do not introduce authentication unless explicitly requested.
+- Do not introduce microservices.
+- Do not introduce queues or message brokers.
+- Do not introduce Docker unless explicitly requested.
+- Keep changes small and reviewable.
+- Working code has priority over architectural elegance.
+- Never change working code just because a cleaner pattern exists.
+- Do not build speculative future features.

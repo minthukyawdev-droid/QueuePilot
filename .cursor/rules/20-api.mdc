@@ -1,0 +1,23 @@
+---
+description: Rules for QueuePilot FastAPI backend changes
+globs:
+  - "services/api/**"
+alwaysApply: false
+---
+
+# API rules
+
+- The Backend developer owns this directory.
+- Use FastAPI.
+- Use Pydantic models for public API schemas.
+- The backend owns future business logic.
+- The backend will eventually own OpenAI communication.
+- The backend will eventually communicate with n8n.
+- Do not implement those integrations during initialization.
+- Never hard-code secrets.
+- Keep endpoint structure versioned under `/api/v1`.
+- Preserve `docs/API_CONTRACT.md`.
+- Do not modify web files.
+- Prefer small services over complex abstractions.
+- Avoid database infrastructure unless requested.
+- Avoid background-worker infrastructure unless requested.

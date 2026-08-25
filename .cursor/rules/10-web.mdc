@@ -1,0 +1,21 @@
+---
+description: Rules for QueuePilot web frontend changes
+globs:
+  - "apps/web/**"
+alwaysApply: false
+---
+
+# Web rules
+
+- The Web developer owns this directory.
+- Use Next.js App Router, TypeScript, and Tailwind CSS.
+- Keep components simple.
+- Do not duplicate backend business logic in the frontend.
+- Communicate with the backend only through the REST API documented in `docs/API_CONTRACT.md`.
+- Do not call OpenAI or n8n directly from browser code.
+- Do not expose API secrets.
+- Read the API base URL from environment configuration when API consumption is introduced.
+- Do not modify backend files to solve frontend problems.
+- Do not modify the API contract independently.
+- Avoid unnecessary UI libraries.
+- Prioritize responsive web UX.
