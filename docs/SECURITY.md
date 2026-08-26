@@ -14,6 +14,8 @@ QueuePilot is a hackathon project. Apply practical safeguards without claiming e
 - Prefer demo data during the hackathon.
 - Avoid storing personal information unless a feature clearly requires it.
 - Review generated code and dependencies before merging.
+- Store deployment credentials only in GitHub secrets and restrict the AWS SSH key to deployment use.
+- Verify the AWS SSH host key; never disable strict host-key checking in automation.
 
 ## Browser boundary
 
@@ -25,4 +27,4 @@ Use fictional names and email addresses for demos. Define retention and deletion
 
 ## Limitations
 
-The initial foundation does not include authentication, authorization, rate limiting, persistent storage, abuse prevention, or production monitoring. These omissions must be reassessed before any public or production deployment. Document known limitations honestly in demo and deployment notes.
+The initial foundation does not include authentication, authorization, rate limiting, persistent storage, abuse prevention, or production monitoring. The initial AWS endpoint also lacks HTTPS until an API domain and certificate are configured. These omissions must be reassessed before product endpoints or sensitive data are exposed. Document known limitations honestly in demo and deployment notes.

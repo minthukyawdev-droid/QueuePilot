@@ -84,3 +84,9 @@ pytest
 `docs/API_CONTRACT.md` is the team agreement between frontend and backend. Contract changes require coordination and synchronized documentation, backend, and frontend updates.
 
 Start with `AGENTS.md`, then read the nested instructions for your ownership area and `docs/DEVELOPMENT_WORKFLOW.md`.
+
+## CI/CD
+
+Pull requests and `main` are checked with GitHub Actions. After CI passes for a commit on `main`, production deployment updates the web app on Netlify and the API on AWS.
+
+See `docs/DEPLOYMENT.md` for required GitHub configuration, server operations, and the current API TLS limitation.
