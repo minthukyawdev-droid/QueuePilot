@@ -49,7 +49,7 @@ The web app uses the root `netlify.toml`:
 - publish directory: `.next`; and
 - Node.js: `20.19.0`.
 
-Netlify automatically supplies its current Next.js adapter. Do not pin the legacy plugin unless a verified compatibility issue requires it.
+The repository explicitly installs `@netlify/plugin-nextjs` because automatic adapter detection did not run for the initial monorepo deploy. Keep the package and `netlify.toml` plugin entry aligned when upgrading.
 
 One-time Netlify setup:
 
