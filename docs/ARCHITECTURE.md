@@ -36,15 +36,17 @@ The repository currently contains:
 
 The web application will consume a versioned REST API. FastAPI will own business logic and will act as the future server-side gateway to AI and automation services. Browser code must not call OpenAI or n8n directly.
 
-## Planned deployments
+## Deployment architecture
 
 ```text
 Next.js -> Netlify
-FastAPI -> Render / Railway / another Python host
+FastAPI -> AWS Ubuntu host (systemd + nginx)
 n8n     -> n8n Cloud or provided environment
 ```
 
-These are deployment targets, not infrastructure currently provisioned by this repository.
+GitHub Actions validates web and API changes. After CI succeeds for a commit merged to `main`, the production workflow deploys that exact commit to Netlify and AWS. Future n8n infrastructure is not provisioned.
+
+See `docs/DEPLOYMENT.md` for configuration, release behavior, and current TLS limitations.
 
 ## Boundaries
 
