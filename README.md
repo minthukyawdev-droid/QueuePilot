@@ -89,4 +89,4 @@ Start with `AGENTS.md`, then read the nested instructions for your ownership are
 
 Pull requests and `main` are checked with GitHub Actions. Netlify's Git integration deploys the web app from `main`; after GitHub CI passes, the production workflow updates the API on AWS.
 
-See `docs/DEPLOYMENT.md` for required GitHub configuration, server operations, and the current API TLS limitation.
+See `docs/DEPLOYMENT.md` for required GitHub configuration, server operations, and API HTTPS renewal.

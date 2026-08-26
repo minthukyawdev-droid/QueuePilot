@@ -56,7 +56,7 @@ One-time Netlify setup:
 1. In Netlify, import `minthukyawdev-droid/QueuePilot` from GitHub.
 2. Select `main` as the production branch.
 3. Keep the build settings from the committed `netlify.toml`.
-4. Add `NEXT_PUBLIC_API_BASE_URL=http://13.212.155.222` in Netlify's production environment variables.
+4. Add `NEXT_PUBLIC_API_BASE_URL=https://13.212.155.222` in Netlify's production environment variables.
 5. Trigger the initial deploy.
 
 After setup, every merge to `main` starts a Netlify production build automatically. No Netlify access token is stored in GitHub Actions.
@@ -65,15 +65,16 @@ After setup, every merge to `main` starts a Netlify production build automatical
 
 The API deploys to the Ubuntu host over SSH. The first successful deployment:
 
-1. installs nginx if needed;
+1. installs nginx, Python venv support, and Certbot if needed;
 2. creates `/opt/queuepilot`;
 3. checks out the exact validated Git commit into a release directory;
 4. creates an isolated Python virtual environment;
 5. installs `services/api/requirements.txt`;
 6. atomically updates `/opt/queuepilot/current`;
 7. installs and restarts the `queuepilot-api` systemd service;
-8. configures nginx on port 80; and
-9. verifies `GET /api/v1/health`.
+8. obtains a trusted Let's Encrypt IP-address certificate;
+9. configures nginx on ports 80 and 443; and
+10. verifies `GET /api/v1/health` over HTTPS.
 
 Only the five newest API releases are retained. A failed dependency installation does not replace the current release. If the post-deploy health check fails, the workflow fails and includes recent service logs.
 
@@ -94,12 +95,20 @@ Useful server checks:
 ```bash
 sudo systemctl status queuepilot-api
 sudo journalctl -u queuepilot-api -n 100 --no-pager
-curl http://127.0.0.1/api/v1/health
+curl https://13.212.155.222/api/v1/health
 ```
 
-## TLS limitation
+## HTTPS
 
-The initial AWS endpoint uses the public IP over HTTP. Before browser product features call the API from Netlify, assign an API domain and configure HTTPS. An HTTPS Netlify page cannot safely call an HTTP API because browsers block mixed content.
+The API uses a browser-trusted Let's Encrypt certificate for the public IP:
+
+```text
+https://13.212.155.222
+```
+
+IP-address certificates are short-lived and valid for approximately six days. The Certbot systemd timer checks twice daily, renews before expiration, and runs the committed nginx reload hook after a successful renewal. HTTP traffic redirects to HTTPS, except for the ACME challenge path required for renewal.
+
+The AWS security group must allow inbound TCP ports `80` and `443`. Port 80 remains required for certificate renewal.
 
 ## Rollback
 

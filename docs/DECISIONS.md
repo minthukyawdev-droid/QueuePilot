@@ -79,3 +79,11 @@
 **Reason:** Netlify can build and publish the Next.js app without storing a personal Netlify token in GitHub Actions.
 
 **Tradeoff:** Netlify uses its own build result rather than waiting for the separate GitHub CI workflow.
+
+## ADR-011 — Let's Encrypt IP certificate
+
+**Decision:** Use an automatically renewed, short-lived Let's Encrypt certificate for the AWS public IP.
+
+**Reason:** Provides browser-trusted HTTPS before an API domain is available.
+
+**Tradeoff:** Six-day certificates require reliable twice-daily renewal checks and port 80 access.

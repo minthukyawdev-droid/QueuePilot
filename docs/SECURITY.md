@@ -27,4 +27,4 @@ Use fictional names and email addresses for demos. Define retention and deletion
 
 ## Limitations
 
-The initial foundation does not include authentication, authorization, rate limiting, persistent storage, abuse prevention, or production monitoring. The initial AWS endpoint also lacks HTTPS until an API domain and certificate are configured. These omissions must be reassessed before product endpoints or sensitive data are exposed. Document known limitations honestly in demo and deployment notes.
+The initial foundation does not include authentication, authorization, rate limiting, persistent storage, abuse prevention, or production monitoring. HTTPS protects transport but does not replace these controls. These omissions must be reassessed before product endpoints or sensitive data are exposed. Document known limitations honestly in demo and deployment notes.
