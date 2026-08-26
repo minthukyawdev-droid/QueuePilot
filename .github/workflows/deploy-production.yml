@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Check out validated revision
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.DEPLOY_SHA }}
 
@@ -45,7 +45,7 @@ jobs:
           test -n "$NEXT_PUBLIC_API_BASE_URL"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20.19.0
           cache: npm
@@ -79,7 +79,7 @@ jobs:
 
     steps:
       - name: Check out validated revision
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.DEPLOY_SHA }}
 
