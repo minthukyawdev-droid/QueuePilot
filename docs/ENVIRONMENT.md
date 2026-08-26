@@ -37,7 +37,7 @@ Do not add real values to Git. AI credentials and sensitive automation URLs belo
 
 ## Deployment
 
-- Configure `NEXT_PUBLIC_API_BASE_URL` through the GitHub `PUBLIC_API_BASE_URL` repository variable used by the Netlify production build.
+- Configure `NEXT_PUBLIC_API_BASE_URL` in the Netlify production environment.
 - Configure backend variables in `/etc/queuepilot/api.env` on the AWS host.
 - Keep deployment configuration free of secrets.
 - Update this document whenever a required variable is introduced, renamed, or removed.

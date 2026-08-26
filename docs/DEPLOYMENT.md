@@ -13,15 +13,12 @@ CI: web lint, type-check, build + API tests
     v
 Merge to main
     |
-    v
-CI succeeds for the merged commit
+    +--> Netlify Git build --> web production
     |
-    +--> Netlify production deploy
-    |
-    +--> AWS API atomic release + health check
+    +--> GitHub CI succeeds --> AWS API atomic release + health check
 ```
 
-The `Deploy production` workflow is triggered only after the `CI` workflow completes successfully for `main`. A failed check prevents production deployment. The workflow can also be started manually from GitHub Actions.
+Netlify watches `main` through its Git integration and publishes only after its own production build succeeds. The GitHub `Deploy production` workflow is triggered only after the `CI` workflow completes successfully for `main`; a failed GitHub check prevents the AWS deployment. The AWS workflow can also be started manually from GitHub Actions.
 
 ## GitHub configuration
 
@@ -30,7 +27,6 @@ Create these repository variables:
 ```text
 AWS_HOST=13.212.155.222
 AWS_USER=ubuntu
-PUBLIC_API_BASE_URL=http://13.212.155.222
 ```
 
 Create these repository secrets:
@@ -38,13 +34,11 @@ Create these repository secrets:
 ```text
 AWS_SSH_PRIVATE_KEY
 AWS_KNOWN_HOSTS
-NETLIFY_AUTH_TOKEN
-NETLIFY_SITE_ID
 ```
 
-Never commit the SSH private key or Netlify token. `AWS_KNOWN_HOSTS` must contain the verified SSH host-key entry for the AWS host; the deployment does not accept unknown host keys.
+Never commit the SSH private key. `AWS_KNOWN_HOSTS` must contain the verified SSH host-key entry for the AWS host; the deployment does not accept unknown host keys.
 
-Both deploy jobs use the GitHub `production` environment. Optional reviewers or branch restrictions can be configured for that environment, but required reviewers will pause automatic deployment and therefore change the merge-to-production behavior.
+The API deploy job uses the GitHub `production` environment. Optional reviewers or branch restrictions can be configured for that environment, but required reviewers will pause automatic deployment and therefore change the merge-to-production behavior.
 
 ## Netlify
 
@@ -57,19 +51,15 @@ The web app uses the root `netlify.toml`:
 
 Netlify automatically supplies its current Next.js adapter. Do not pin the legacy plugin unless a verified compatibility issue requires it.
 
-One-time setup:
+One-time Netlify setup:
 
-1. Create a Netlify site.
-2. Generate a Netlify personal access token.
-3. Add its site ID and token as the GitHub secrets listed above.
-4. Confirm `PUBLIC_API_BASE_URL` points to the production API.
-5. Run `Deploy production` manually once or merge a validated change to `main`.
+1. In Netlify, import `minthukyawdev-droid/QueuePilot` from GitHub.
+2. Select `main` as the production branch.
+3. Keep the build settings from the committed `netlify.toml`.
+4. Add `NEXT_PUBLIC_API_BASE_URL=http://13.212.155.222` in Netlify's production environment variables.
+5. Trigger the initial deploy.
 
-The workflow deploys the exact commit that passed CI with:
-
-```text
-netlify deploy --build --prod
-```
+After setup, every merge to `main` starts a Netlify production build automatically. No Netlify access token is stored in GitHub Actions.
 
 ## AWS API
 
