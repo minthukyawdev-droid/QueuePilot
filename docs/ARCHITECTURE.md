@@ -46,7 +46,7 @@ n8n     -> n8n Cloud or provided environment
 
 GitHub Actions validates web and API changes. Netlify's Git integration deploys merged `main` commits after its own build succeeds. After GitHub CI succeeds on `main`, the production workflow deploys that exact commit to AWS. Future n8n infrastructure is not provisioned.
 
-See `docs/DEPLOYMENT.md` for configuration, release behavior, and current TLS limitations.
+See `docs/DEPLOYMENT.md` for configuration, release behavior, and HTTPS renewal details.
 
 ## Boundaries
 

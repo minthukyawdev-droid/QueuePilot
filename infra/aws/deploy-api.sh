@@ -10,6 +10,10 @@ RELEASE_DIR="${RELEASES_DIR}/${DEPLOY_SHA}"
 CURRENT_LINK="${APP_ROOT}/current"
 ENV_DIR="/etc/queuepilot"
 ENV_FILE="${ENV_DIR}/api.env"
+PUBLIC_IP="13.212.155.222"
+CERTBOT="/snap/bin/certbot"
+CERTIFICATE_DIR="/etc/letsencrypt/live/${PUBLIC_IP}"
+ACME_WEBROOT="/var/www/letsencrypt"
 
 if [[ ! "${DEPLOY_SHA}" =~ ^[0-9a-f]{40}$ ]]; then
     echo "A full Git commit SHA is required." >&2
@@ -25,8 +29,13 @@ if ! command -v nginx >/dev/null 2>&1 \
         python3-venv
 fi
 
+if [[ ! -x "${CERTBOT}" ]]; then
+    sudo snap install certbot --classic
+fi
+
 sudo install -d -m 0755 -o ubuntu -g ubuntu "${APP_ROOT}" "${RELEASES_DIR}"
 sudo install -d -m 0750 -o root -g ubuntu "${ENV_DIR}"
+sudo install -d -m 0755 -o root -g root "${ACME_WEBROOT}"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
     printf '%s\n' \
@@ -59,12 +68,39 @@ sudo install -m 0644 \
     "${RELEASE_DIR}/infra/aws/queuepilot-api.service" \
     /etc/systemd/system/queuepilot-api.service
 sudo install -m 0644 \
-    "${RELEASE_DIR}/infra/aws/queuepilot-api.nginx" \
+    "${RELEASE_DIR}/infra/aws/queuepilot-api.bootstrap.nginx" \
     /etc/nginx/sites-available/queuepilot-api
+sudo install -d -m 0755 \
+    /etc/letsencrypt/renewal-hooks/deploy
+sudo install -m 0755 \
+    "${RELEASE_DIR}/infra/aws/reload-nginx.sh" \
+    /etc/letsencrypt/renewal-hooks/deploy/reload-nginx
 sudo ln -sfn \
     /etc/nginx/sites-available/queuepilot-api \
     /etc/nginx/sites-enabled/queuepilot-api
 sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl enable --now nginx
+sudo systemctl reload nginx
+
+if [[ ! -f "${CERTIFICATE_DIR}/fullchain.pem" ]]; then
+    sudo "${CERTBOT}" certonly \
+        --webroot \
+        --webroot-path "${ACME_WEBROOT}" \
+        --preferred-profile shortlived \
+        --ip-address "${PUBLIC_IP}" \
+        --cert-name "${PUBLIC_IP}" \
+        --non-interactive \
+        --agree-tos \
+        --register-unsafely-without-email
+else
+    sudo "${CERTBOT}" renew --quiet
+fi
+
+sudo systemctl enable --now snap.certbot.renew.timer
+sudo install -m 0644 \
+    "${RELEASE_DIR}/infra/aws/queuepilot-api.nginx" \
+    /etc/nginx/sites-available/queuepilot-api
 sudo nginx -t
 
 ln -sfn "${RELEASE_DIR}" "${APP_ROOT}/current-next"
@@ -73,12 +109,11 @@ mv -Tf "${APP_ROOT}/current-next" "${CURRENT_LINK}"
 sudo systemctl daemon-reload
 sudo systemctl enable --now queuepilot-api
 sudo systemctl restart queuepilot-api
-sudo systemctl enable --now nginx
 sudo systemctl reload nginx
 
 for attempt in {1..20}; do
     if curl --fail --silent --show-error \
-        http://127.0.0.1/api/v1/health >/dev/null; then
+        "https://${PUBLIC_IP}/api/v1/health" >/dev/null; then
         echo "QueuePilot API ${DEPLOY_SHA} is healthy."
         ls -1dt "${RELEASES_DIR}"/*/ 2>/dev/null \
             | awk 'NR > 5' \
