@@ -16,9 +16,13 @@ if [[ ! "${DEPLOY_SHA}" =~ ^[0-9a-f]{40}$ ]]; then
     exit 1
 fi
 
-if ! command -v nginx >/dev/null 2>&1; then
+if ! command -v nginx >/dev/null 2>&1 \
+    || ! dpkg-query -W -f='${Status}' python3-venv 2>/dev/null \
+        | grep -q 'ok installed'; then
     sudo apt-get update
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        nginx \
+        python3-venv
 fi
 
 sudo install -d -m 0755 -o ubuntu -g ubuntu "${APP_ROOT}" "${RELEASES_DIR}"
@@ -45,6 +49,7 @@ if [[ "$(git -C "${RELEASE_DIR}" rev-parse HEAD)" != "${DEPLOY_SHA}" ]]; then
     exit 1
 fi
 
+rm -rf "${RELEASE_DIR}/.venv"
 python3 -m venv "${RELEASE_DIR}/.venv"
 "${RELEASE_DIR}/.venv/bin/python" -m pip install --upgrade pip
 "${RELEASE_DIR}/.venv/bin/python" -m pip install \
